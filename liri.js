@@ -4,12 +4,6 @@ var request = require("request");
 var twitter = require('twitter');
 var twitterKeys = require('./keys.js');
 
-var client = new twitter({
-  consumer_key: twitterKeys.twitterKeys.consumer_key,
-  consumer_secret: twitterKeys.twitterKeys.consumer_secret,
-  access_token_key: twitterKeys.twitterKeys.access_token_key,
-  access_token_secret: twitterKeys.twitterKeys.access_token_secret
-});
 
 var searchCommand = process.argv[2];
 var searchTerm = process.argv[3];
@@ -35,6 +29,14 @@ function runLiri(searchCommand, searchTerm){
 };
 
 function twitterPosts() {
+
+	var client = new twitter({
+	  consumer_key: twitterKeys.twitterKeys.consumer_key,
+	  consumer_secret: twitterKeys.twitterKeys.consumer_secret,
+	  access_token_key: twitterKeys.twitterKeys.access_token_key,
+	  access_token_secret: twitterKeys.twitterKeys.access_token_secret
+	});
+
 	var params = {screen_name: 'rkhardeman', count: '20'};
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
 	  if (!error) {
