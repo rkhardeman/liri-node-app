@@ -2,8 +2,9 @@ var fs = require('fs');
 var request = require("request");
 
 var twitter = require('twitter');
+var spotifyNode = require('spotify');
 var twitterKeys = require('./keys.js');
-
+var spotifyKeys = require('./keys.js');
 
 var searchCommand = process.argv[2];
 var searchTerm = process.argv[3];
@@ -18,7 +19,7 @@ function runLiri(searchCommand, searchTerm){
 			movieInfo(searchTerm);
 			break;
 		case 'spotify-this-song':
-			sptofySearch(searchTerm);
+			spotifySearch(searchTerm);
 			break;
 		case 'do-what-it-says':
 			fileReader();
@@ -41,7 +42,7 @@ function twitterPosts() {
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
 	  if (!error) {
 	  	tweets.forEach(function(element) {
-		    console.log(element.created_at + ": " + element.text);
+		console.log(element.created_at + ": " + element.text);
 		});
 	  }
 	});
@@ -64,4 +65,36 @@ function movieInfo(searchTerm){
 	    console.log("Actors: " + JSON.parse(body).Actors);
 		});
 
+};
+
+function spotifySearch(searchTerm) {
+
+	var spotify = spotifyNode({
+		consumer_key: spotifyKeys.consumer_key,
+		consumer_secret: spotifyKeys.consumer_secret,
+	}); 
+
+	spotify.search({ type: 'track', query: searchTerm}, function(err, data) {
+
+    	if ( err ) {
+        	console.log('Error occurred: ' + err);
+        	return;
+   		}
+   		else {
+
+   			var songData = data.tracks.items;
+
+   			for (var i = 0; i < 1; i++){
+
+   				var song = "===================================" + "\r\n" +
+   							"Artist: " + songData[i].artists[0].name + "\r\n" +
+  							"Title: " + songData[i].name + "\r\n" +
+  							"Album: " + songData[i].album.name + "\r\n" +
+  							"Preview Link: " + songData[i].preview_url + "\r\n" +
+  							"===================================";
+   							console.log(song);
+   							log("\r\n %%%%%%%%%% \r\n" + song + "\r\n %%%%%%%%%%");
+   			}
+   		}
+   	});
 };
