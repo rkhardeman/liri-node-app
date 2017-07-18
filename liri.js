@@ -2,7 +2,7 @@ var fs = require('fs');
 var request = require("request");
 
 var twitter = require('twitter');
-var spotifyNode = require('spotify');
+var Spotify = require('node-spotify-api');
 var twitterKeys = require('./keys.js');
 var spotifyKeys = require('./keys.js');
 
@@ -69,32 +69,24 @@ function movieInfo(searchTerm){
 
 function spotifySearch(searchTerm) {
 
-	var spotify = spotifyNode({
-		consumer_key: spotifyKeys.consumer_key,
-		consumer_secret: spotifyKeys.consumer_secret,
-	}); 
+var spotify = new Spotify({
+		id: spotifyKeys.spotifyClient.id,
+		secret: spotifyKeys.spotifyClient.secret
+	});
+	spotify.search({ type: 'track', query: searchTerm, limit: 1 }, function(err, data) {
 
-	spotify.search({ type: 'track', query: searchTerm}, function(err, data) {
+		var response = data.tracks.items;
+		
+		var artistName = response[0].artists[0].name;
+		var songName = response[0].name;
+		var previewURL = response[0].preview_url;
+		var albumName = response[0].album.name;
+		
+		console.log('-------------------');
+		console.log('Artist:  '+ artistName);
+		console.log('Album: ' + albumName);
+		console.log('Song Name: ' + songName);
+		console.log('Preview it here: ' + previewURL);
 
-    	if ( err ) {
-        	console.log('Error occurred: ' + err);
-        	return;
-   		}
-   		else {
-
-   			var songData = data.tracks.items;
-
-   			for (var i = 0; i < 1; i++){
-
-   				var song = "===================================" + "\r\n" +
-   							"Artist: " + songData[i].artists[0].name + "\r\n" +
-  							"Title: " + songData[i].name + "\r\n" +
-  							"Album: " + songData[i].album.name + "\r\n" +
-  							"Preview Link: " + songData[i].preview_url + "\r\n" +
-  							"===================================";
-   							console.log(song);
-   							log("\r\n %%%%%%%%%% \r\n" + song + "\r\n %%%%%%%%%%");
-   			}
-   		}
-   	});
+	});
 };
